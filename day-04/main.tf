@@ -21,10 +21,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-
-
-
-
 # Create S3 Bucket
 resource "aws_s3_bucket" "example_bucket" {
   bucket = "r2r-example-bucket-12345"
