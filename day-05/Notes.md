@@ -1,19 +1,21 @@
-A simple demo showing the three types of Terraform variables using a basic S3 bucket.
+# Día 5/28 - Demo de Variables en Terraform
 
-## 🎯 Three Types of Variables
+Una demo sencilla que muestra los tres tipos de variables en Terraform usando un bucket S3 básico.
 
-### 1. **Input Variables** (`variables.tf`)
-Values you provide to Terraform - like function parameters
+## 🎯 Los Tres Tipos de Variables
+
+### 1. **Variables de Entrada** (`variables.tf`)
+Valores que tú proporcionas a Terraform — como parámetros de una función
 ```hcl
 variable "environment" {
-  description = "Environment name"
+  description = "Nombre del entorno"
   type        = string
   default     = "staging"
 }
 ```
 
-### 2. **Local Variables** (`locals.tf`)
-Internal computed values - like local variables in programming
+### 2. **Variables Locales** (`locals.tf`)
+Valores calculados internamente — como variables locales en programación
 ```hcl
 locals {
   common_tags = {
@@ -25,132 +27,131 @@ locals {
 }
 ```
 
-### 3. **Output Variables** (`output.tf`)
-Values returned after deployment - like function return values
+### 3. **Variables de Salida** (`output.tf`)
+Valores retornados después del despliegue — como el valor de retorno de una función
 ```hcl
 output "bucket_name" {
-  description = "Name of the S3 bucket"
+  description = "Nombre del bucket S3"
   value       = aws_s3_bucket.demo.bucket
 }
 ```
 
-## 📥 Understanding Input Variables in Detail
+## 📥 Variables de Entrada en Detalle
 
-### What are Input Variables?
-Input variables are like **function parameters** - they allow you to customize your Terraform configuration without hardcoding values.
+### ¿Qué son las Variables de Entrada?
+Las variables de entrada son como **parámetros de función** — permiten personalizar tu configuración de Terraform sin necesidad de codificar valores directamente.
 
-### Basic Input Variable Structure
+### Estructura Básica de una Variable de Entrada
 ```hcl
-variable "variable_name" {
-  description = "What this variable is for"
+variable "nombre_variable" {
+  description = "Para qué sirve esta variable"
   type        = string
-  default     = "default_value"  # Optional
+  default     = "valor_por_defecto"  # Opcional
 }
 ```
 
-### How to Use Input Variables
+### Cómo Usar Variables de Entrada
 ```hcl
-# Define in variables.tf
+# Definir en variables.tf
 variable "environment" {
-  description = "Environment name"
+  description = "Nombre del entorno"
   type        = string
   default     = "staging"
 }
 
 variable "bucket_name" {
-  description = "S3 bucket name"
+  description = "Nombre del bucket S3"
   type        = string
   default     = "my-terraform-bucket"
 }
 
-# Reference with var. prefix in main.tf
+# Referenciar con el prefijo var. en main.tf
 resource "aws_s3_bucket" "demo" {
-  bucket = var.bucket_name  # Using input variable
+  bucket = var.bucket_name  # Usando variable de entrada
   
   tags = {
-    Environment = var.environment  # Using input variable
+    Environment = var.environment  # Usando variable de entrada
   }
 }
 ```
 
-### Providing Values to Input Variables
+### Formas de Proveer Valores a las Variables de Entrada
 
-**1. Default values** (in variables.tf)
+**1. Valores por defecto** (en variables.tf)
 ```hcl
 variable "environment" {
   default = "staging"
 }
 ```
 
-**2. terraform.tfvars file** (auto-loaded)
+**2. Archivo terraform.tfvars** (cargado automáticamente)
 ```hcl
 environment = "demo"
 bucket_name = "terraform-demo-bucket"
 ```
 
-**3. Command line**
+**3. Línea de comandos**
 ```bash
 terraform plan -var="environment=production"
 ```
 
-**4. Environment variables**
+**4. Variables de entorno**
 ```bash
 export TF_VAR_environment="development"
 terraform plan
 ```
 
-## 📤 Understanding Output Variables in Detail
+## 📤 Variables de Salida en Detalle
 
-### What are Output Variables?
-Output variables are like **function return values** - they display important information after Terraform creates your infrastructure.
+### ¿Qué son las Variables de Salida?
+Las variables de salida son como **valores de retorno de una función** — muestran información importante después de que Terraform crea tu infraestructura.
 
-### Basic Output Variable Structure
+### Estructura Básica de una Variable de Salida
 ```hcl
-output "output_name" {
-  description = "What this output shows"
-  value       = resource.resource_name.attribute
+output "nombre_output" {
+  description = "Qué muestra este output"
+  value       = recurso.nombre_recurso.atributo
 }
 ```
 
-### How to Use Output Variables
+### Cómo Usar Variables de Salida
 
-**Define in output.tf**
+**Definir en output.tf**
 ```hcl
-# Output a resource attribute
+# Output de un atributo de recurso
 output "bucket_name" {
-  description = "Name of the S3 bucket"
+  description = "Nombre del bucket S3"
   value       = aws_s3_bucket.demo.bucket
 }
 
 output "bucket_arn" {
-  description = "ARN of the S3 bucket"
+  description = "ARN del bucket S3"
   value       = aws_s3_bucket.demo.arn
 }
 
-# Output an input variable (to confirm what was used)
+# Output de una variable de entrada (para confirmar el valor usado)
 output "environment" {
-  description = "Environment from input variable"
+  description = "Entorno obtenido de la variable de entrada"
   value       = var.environment
 }
 
-# Output a local variable (to see computed values)
+# Output de una variable local (para ver valores calculados)
 output "tags" {
-  description = "Tags from local variable"
+  description = "Etiquetas obtenidas de la variable local"
   value       = local.common_tags
 }
 ```
 
-### Viewing Outputs
+### Ver los Outputs
 
-After running `terraform apply`, you can view outputs:
-
+Después de ejecutar `terraform apply`, puedes consultar los outputs:
 ```bash
-terraform output                    # Show all outputs
-terraform output bucket_name        # Show specific output
-terraform output -json              # Show all outputs in JSON format
+terraform output                    # Mostrar todos los outputs
+terraform output bucket_name        # Mostrar un output específico
+terraform output -json              # Mostrar todos los outputs en formato JSON
 ```
 
-**Example output:**
+**Ejemplo de salida:**
 ```
 bucket_arn = "arn:aws:s3:::demo-terraform-demo-bucket-abc123"
 bucket_name = "demo-terraform-demo-bucket-abc123"
@@ -162,153 +163,147 @@ tags = {
 }
 ```
 
-## 🏗️ What This Creates
+## 🏗️ ¿Qué Crea Esta Configuración?
 
-Just one simple S3 bucket that demonstrates all three variable types:
-- Uses **input variables** for environment and bucket name
-- Uses **local variables** for computed bucket name and tags
-- Uses **output variables** to show the created bucket details
+Solo un bucket S3 sencillo que demuestra los tres tipos de variables:
+- Usa **variables de entrada** para el entorno y el nombre del bucket
+- Usa **variables locales** para calcular el nombre del bucket y las etiquetas
+- Usa **variables de salida** para mostrar los detalles del bucket creado
 
-## 🚀 Variable Precedence Testing
+## 🚀 Prueba de Precedencia de Variables
 
-### 1. **Default Values** (temporarily hide terraform.tfvars)
+### 1. **Valores por Defecto** (ocultar temporalmente terraform.tfvars)
 ```bash
 mv terraform.tfvars terraform.tfvars.backup
 terraform plan
-# Uses: environment = "staging" (from variables.tf default)
-mv terraform.tfvars.backup terraform.tfvars  # restore
+# Usa: environment = "staging" (valor por defecto en variables.tf)
+mv terraform.tfvars.backup terraform.tfvars  # restaurar
 ```
 
-### 2. **Using terraform.tfvars** (automatically loaded)
+### 2. **Usando terraform.tfvars** (cargado automáticamente)
 ```bash
 terraform plan
-# Uses: environment = "demo" (from terraform.tfvars)
+# Usa: environment = "demo" (desde terraform.tfvars)
 ```
 
-### 3. **Command Line Override** (highest precedence)
+### 3. **Sobreescritura por Línea de Comandos** (mayor precedencia)
 ```bash
 terraform plan -var="environment=production"
-# Overrides tfvars: environment = "production"
+# Sobreescribe tfvars: environment = "production"
 ```
 
-### 4. **Environment Variables**
+### 4. **Variables de Entorno**
 ```bash
 export TF_VAR_environment="staging-from-env"
 terraform plan
-# Uses environment variable (but command line still wins)
+# Usa la variable de entorno (pero la línea de comandos sigue ganando)
 ```
 
-### 5. **Using Different tfvars Files**
+### 5. **Usando Archivos tfvars Alternativos**
 ```bash
 terraform plan -var-file="dev.tfvars"        # environment = "development"
 terraform plan -var-file="production.tfvars"  # environment = "production"
 ```
+
+## 📁 Estructura de Archivos
+```
+├── main.tf           # Recurso del bucket S3
+├── variables.tf      # Variables de entrada (2 variables simples)
+├── locals.tf         # Variables locales (etiquetas y nombre calculado)
+├── output.tf         # Variables de salida (detalles del bucket)
+├── provider.tf       # Proveedor AWS
+├── terraform.tfvars  # Valores por defecto de las variables
+└── README.md         # Este archivo
 ```
 
-## 📁 Simple File Structure
+## 🧪 Ejemplos Prácticos
 
-```
-├── main.tf           # S3 bucket resource
-├── variables.tf      # Input variables (2 simple variables)
-├── locals.tf         # Local variables (tags and computed name)
-├── output.tf         # Output variables (bucket details)
-├── provider.tf       # AWS provider
-├── terraform.tfvars  # Default variable values
-└── README.md         # This file
-```
-
-## 🧪 Practical Examples
-
-### Example 1: Testing Different Input Values
-
+### Ejemplo 1: Probar Diferentes Valores de Entrada
 ```bash
-# Test with defaults (temporarily hide terraform.tfvars)
+# Probar con valores por defecto (ocultar temporalmente terraform.tfvars)
 mv terraform.tfvars terraform.tfvars.backup
 terraform plan
-# Shows: Environment = "staging", bucket will be "staging-my-terraform-bucket-xxxxx"
+# Muestra: Environment = "staging", el bucket será "staging-my-terraform-bucket-xxxxx"
 
-# Test with terraform.tfvars
+# Probar con terraform.tfvars
 mv terraform.tfvars.backup terraform.tfvars
 terraform plan  
-# Shows: Environment = "demo", bucket will be "demo-terraform-demo-bucket-xxxxx"
+# Muestra: Environment = "demo", el bucket será "demo-terraform-demo-bucket-xxxxx"
 
-# Test with command line override
+# Probar con sobreescritura por línea de comandos
 terraform plan -var="environment=test" -var="bucket_name=my-test-bucket"
-# Shows: Environment = "test", bucket will be "test-my-test-bucket-xxxxx"
+# Muestra: Environment = "test", el bucket será "test-my-test-bucket-xxxxx"
 ```
 
-### Example 2: Viewing All Variable Types in Action
-
+### Ejemplo 2: Ver los Tres Tipos de Variables en Acción
 ```bash
-# Apply the configuration
+# Aplicar la configuración
 terraform apply -auto-approve
 
-# See all outputs (shows output variables)
+# Ver todos los outputs (muestra las variables de salida)
 terraform output
 # bucket_arn = "arn:aws:s3:::demo-terraform-demo-bucket-abc123"
 # bucket_name = "demo-terraform-demo-bucket-abc123"  
-# environment = "demo"                                # (input variable)
-# tags = {                                           # (local variable)
+# environment = "demo"                                # (variable de entrada)
+# tags = {                                           # (variable local)
 #   "Environment" = "demo"
 #   "Owner" = "DevOps-Team"  
 #   "Project" = "Terraform-Demo"
 # }
 
-# See how local variables computed the bucket name
-echo "Input: environment = $(terraform output -raw environment)"
-echo "Input: bucket_name = terraform-demo-bucket (from tfvars)"  
+# Ver cómo las variables locales calcularon el nombre del bucket
+echo "Entrada: environment = $(terraform output -raw environment)"
+echo "Entrada: bucket_name = terraform-demo-bucket (desde tfvars)"  
 echo "Local: full_bucket_name = $(terraform output -raw bucket_name)"
-echo "Random suffix was added by local variable!"
+echo "¡El sufijo aleatorio fue añadido por la variable local!"
 ```
 
-### Example 3: Variable Precedence in Action
-
+### Ejemplo 3: Precedencia de Variables en Acción
 ```bash
-# Start with terraform.tfvars (environment = "demo")
+# Comenzar con terraform.tfvars (environment = "demo")
 terraform plan | grep Environment
-# Shows: "Environment" = "demo"
+# Muestra: "Environment" = "demo"
 
-# Override with environment variable
-export TF_VAR_environment="from-env-var"
+# Sobreescribir con variable de entorno
+export TF_VAR_environment="desde-variable-entorno"
 terraform plan | grep Environment  
-# Shows: "Environment" = "from-env-var"
+# Muestra: "Environment" = "desde-variable-entorno"
 
-# Override with command line (highest precedence)
-terraform plan -var="environment=from-command-line" | grep Environment
-# Shows: "Environment" = "from-command-line"
+# Sobreescribir con línea de comandos (mayor precedencia)
+terraform plan -var="environment=desde-linea-comandos" | grep Environment
+# Muestra: "Environment" = "desde-linea-comandos"
 
-# Clean up
+# Limpiar
 unset TF_VAR_environment
 ```
 
-## 🔧 Try These Commands
-
+## 🔧 Comandos para Practicar
 ```bash
-# Initialize
+# Inicializar
 terraform init
 
-# Plan with defaults
+# Planificar con valores por defecto
 terraform plan
 
-# Plan with command line override
+# Planificar con sobreescritura por línea de comandos
 terraform plan -var="environment=test"
 
-# Plan with different tfvars file
+# Planificar con un archivo tfvars alternativo
 terraform plan -var-file="dev.tfvars"
 
-# Apply and see outputs
+# Aplicar y ver outputs
 terraform apply
 terraform output
 
-# Clean up
+# Destruir la infraestructura
 terraform destroy
 ```
 
-## 💡 Key Takeaways
+## 💡 Conclusiones Clave
 
-- **Input variables**: Parameterize your configuration
-- **Local variables**: Compute and reuse values
-- **Output variables**: Share results after deployment
-- **Precedence**: Command line > tfvars > environment vars > defaults
+- **Variables de entrada**: Parametrizan tu configuración
+- **Variables locales**: Calculan y reutilizan valores internamente
+- **Variables de salida**: Exponen resultados después del despliegue
+- **Precedencia**: Línea de comandos > tfvars > variables de entorno > valores por defecto
 
-This simple example shows exactly how the video explains variables - clear, focused, and easy to understand!
+¡Este ejemplo sencillo muestra exactamente cómo funciona el sistema de variables — claro, enfocado y fácil de entender!
