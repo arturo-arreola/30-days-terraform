@@ -1,45 +1,43 @@
-## 📚 What You'll Learn
+## 📚 Qué Aprenderás
 
-- Understanding all Terraform meta-arguments
-- **count** - Create multiple resources with numeric indexing
-- **for_each** - Create multiple resources with maps/sets
-- **depends_on** - Explicit resource dependencies
-- **lifecycle** - Control resource creation and destruction behavior
-- **provider** - Use alternate provider configurations
-- Output transformations with `for` expressions
-- Best practices for each meta-argument
+- Comprender todos los meta-argumentos de Terraform
+- **count** - Crear múltiples recursos con indexación numérica
+- **for_each** - Crear múltiples recursos con maps/sets
+- **depends_on** - Dependencias explícitas entre recursos
+- **lifecycle** - Controlar el comportamiento de creación y destrucción de recursos
+- **provider** - Usar configuraciones alternativas de proveedor
+- Transformaciones de outputs con expresiones `for`
+- Buenas prácticas para cada meta-argumento
 
-## 📁 Lesson Structure
-
+## 📁 Estructura de la Lección
 ```
 day08/
-├── provider.tf      # AWS provider configuration
-├── variables.tf     # Input variables (list, set, map, object types)
-├── local.tf         # Local values and common tags
-├── backend.tf       # S3 backend configuration
-├── main.tf          # Main resource definitions with count and for_each examples
-├── output.tf        # Output values demonstrating for loops
-├── task.md          # Hands-on exercises and tasks
-└── README.md        # This file
+├── provider.tf      # Configuración del proveedor AWS
+├── variables.tf     # Variables de entrada (tipos list, set, map, object)
+├── local.tf         # Valores locales y etiquetas comunes
+├── backend.tf       # Configuración del backend en S3
+├── main.tf          # Definiciones principales de recursos con ejemplos de count y for_each
+├── output.tf        # Valores de salida que demuestran el uso de bucles for
+├── task.md          # Ejercicios prácticos y tareas
+└── README.md        # Este archivo
+```
 
+## 🎯 Conceptos Clave
 
-## 🎯 Key Concepts
+### Resumen de Meta-Argumentos
 
-### Meta-Arguments Overview
+Los meta-argumentos son argumentos especiales que pueden usarse con **cualquier tipo de recurso** para modificar su comportamiento:
 
-Meta-arguments are special arguments that can be used with **any resource type** to change the behavior of resources:
+1. **count** - Crear múltiples instancias de un recurso basándose en un número
+2. **for_each** - Crear múltiples instancias de un recurso basándose en un map o set
+3. **depends_on** - Dependencias explícitas entre recursos
+4. **lifecycle** - Personalizar el comportamiento del ciclo de vida de un recurso
+5. **provider** - Seleccionar una configuración de proveedor no predeterminada
+6. **provisioner** - Ejecutar scripts al crear o destruir recursos (no recomendado)
 
-1. **count** - Create multiple resource instances based on a number
-2. **for_each** - Create multiple resource instances based on a map or set
-3. **depends_on** - Explicit resource dependencies
-4. **lifecycle** - Customize resource lifecycle behavior
-5. **provider** - Select a non-default provider configuration
-6. **provisioner** - Execute scripts on resource creation/destruction (not recommended)
+**¡Esta lección incluye ejemplos simples para todos los meta-argumentos!**
 
-**This lesson includes simple examples for all meta-arguments!**
-
-### COUNT Meta-Argument
-
+### Meta-Argumento COUNT
 ```hcl
 resource "aws_s3_bucket" "example" {
   count  = 3
@@ -47,18 +45,17 @@ resource "aws_s3_bucket" "example" {
 }
 ```
 
-**Use cases:**
-- Creating N identical resources
-- Simple iteration over a list
-- When numeric index is sufficient
+**Casos de uso:**
+- Crear N recursos idénticos
+- Iteración simple sobre una lista
+- Cuando un índice numérico es suficiente
 
-**Limitations:**
-- Removing items from the middle of a list causes resource recreation
-- Less stable resource addressing
-- Harder to maintain
+**Limitaciones:**
+- Eliminar elementos del medio de una lista provoca la recreación de recursos
+- Direccionamiento de recursos menos estable
+- Más difícil de mantener
 
-### FOR_EACH Meta-Argument
-
+### Meta-Argumento FOR_EACH
 ```hcl
 resource "aws_s3_bucket" "example" {
   for_each = toset(["bucket1", "bucket2", "bucket3"])
@@ -66,19 +63,18 @@ resource "aws_s3_bucket" "example" {
 }
 ```
 
-**Use cases:**
-- Creating resources from a map or set
-- Stable resource addressing by key
-- Production environments
-- Complex resource configurations
+**Casos de uso:**
+- Crear recursos a partir de un map o set
+- Direccionamiento estable de recursos por clave
+- Entornos de producción
+- Configuraciones de recursos complejas
 
-**Benefits:**
-- Adding/removing items doesn't affect other resources
-- More readable resource references
-- Better for production use
+**Ventajas:**
+- Agregar o eliminar elementos no afecta a los demás recursos
+- Referencias a recursos más legibles
+- Mejor opción para producción
 
-### DEPENDS_ON Meta-Argument
-
+### Meta-Argumento DEPENDS_ON
 ```hcl
 resource "aws_s3_bucket" "dependent" {
   bucket = "my-bucket"
@@ -87,182 +83,179 @@ resource "aws_s3_bucket" "dependent" {
 }
 ```
 
-**Use cases:**
-- Explicit resource ordering
-- Hidden dependencies not captured by references
-- Ensuring resources are created in specific order
+**Casos de uso:**
+- Ordenamiento explícito de recursos
+- Dependencias implícitas no capturadas por referencias directas
+- Garantizar que los recursos se creen en un orden específico
 
-### LIFECYCLE Meta-Argument
-
+### Meta-Argumento LIFECYCLE
 ```hcl
 resource "aws_s3_bucket" "example" {
   bucket = "my-bucket"
   
   lifecycle {
-    prevent_destroy       = true  # Prevent accidental deletion
-    create_before_destroy = true  # Create new before destroying old
-    ignore_changes        = [tags] # Ignore changes to tags
+    prevent_destroy       = true  # Prevenir eliminación accidental
+    create_before_destroy = true  # Crear el nuevo antes de destruir el antiguo
+    ignore_changes        = [tags] # Ignorar cambios en las etiquetas
   }
 }
 ```
 
-**Use cases:**
-- Protect critical resources from deletion
-- Zero-downtime updates
-- Ignore external changes to specific attributes
+**Casos de uso:**
+- Proteger recursos críticos de ser eliminados
+- Actualizaciones sin tiempo de inactividad (zero-downtime)
+- Ignorar cambios externos en atributos específicos
 
-### PROVIDER Meta-Argument
-
+### Meta-Argumento PROVIDER
 ```hcl
 resource "aws_s3_bucket" "example" {
-  provider = aws.west  # Use alternate provider
+  provider = aws.west  # Usar proveedor alternativo
   bucket   = "my-bucket"
 }
 ```
 
-**Use cases:**
-- Multi-region deployments
-- Multi-account setups
-- Cross-region replication
+**Casos de uso:**
+- Despliegues multi-región
+- Configuraciones multi-cuenta
+- Replicación entre regiones
 
-## 🚀 Quick Start
+## 🚀 Inicio Rápido
 
-### Prerequisites
+### Requisitos Previos
 
 - Terraform >= 1.9.0
-- AWS CLI configured with appropriate credentials
-- Basic understanding of Terraform syntax
+- AWS CLI configurado con las credenciales adecuadas
+- Conocimiento básico de la sintaxis de Terraform
 
-### Steps
+### Pasos
 
-1. **Clone and navigate to the lesson folder:**
-   ```bash
+1. **Clona y navega a la carpeta de la lección:**
+```bash
    cd lessons/day08
-   ```
+```
 
-2. **Update variables (important!):**
-   - Edit `variables.tf` or create a `terraform.tfvars` file
-   - Change S3 bucket names to be globally unique
-   - Update AWS region if needed
+2. **Actualiza las variables (¡importante!):**
+   - Edita `variables.tf` o crea un archivo `terraform.tfvars`
+   - Cambia los nombres de los buckets S3 para que sean globalmente únicos
+   - Actualiza la región de AWS si es necesario
 
-3. **Initialize Terraform:**
-   ```bash
+3. **Inicializa Terraform:**
+```bash
    terraform init
-   ```
+```
 
-4. **Format your code:**
-   ```bash
+4. **Formatea el código:**
+```bash
    terraform fmt
-   ```
+```
 
-5. **Validate configuration:**
-   ```bash
+5. **Valida la configuración:**
+```bash
    terraform validate
-   ```
+```
 
-6. **Review the execution plan:**
-   ```bash
+6. **Revisa el plan de ejecución:**
+```bash
    terraform plan
-   ```
+```
 
-7. **Apply (optional):**
-   ```bash
+7. **Aplica (opcional):**
+```bash
    terraform apply
-   ```
+```
 
-8. **View outputs:**
-   ```bash
+8. **Consulta los outputs:**
+```bash
    terraform output
-   ```
+```
 
-9. **Cleanup:**
-   ```bash
+9. **Limpieza:**
+```bash
    terraform destroy
-   ```
+```
 
-## 📝 Examples Included
+## 📝 Ejemplos Incluidos
 
-### 1. COUNT Meta-Argument
-- Creates multiple S3 buckets using a list variable
-- Demonstrates `count.index` usage
-- Index-based resource addressing
+### 1. Meta-Argumento COUNT
+- Crea múltiples buckets S3 usando una variable de tipo lista
+- Demuestra el uso de `count.index`
+- Direccionamiento de recursos basado en índice
 
-### 2. FOR_EACH Meta-Argument (Set)
-- Creates S3 buckets using a set variable
-- Demonstrates `each.key` and `each.value`
-- More stable resource addressing
+### 2. Meta-Argumento FOR_EACH (Set)
+- Crea buckets S3 usando una variable de tipo set
+- Demuestra el uso de `each.key` y `each.value`
+- Direccionamiento de recursos más estable
 
-### 3. DEPENDS_ON Meta-Argument
-- Shows explicit resource dependencies
-- Primary and dependent bucket example
-- Control resource creation order
+### 3. Meta-Argumento DEPENDS_ON
+- Muestra dependencias explícitas entre recursos
+- Ejemplo con bucket primario y bucket dependiente
+- Control del orden de creación de recursos
 
-### 4. LIFECYCLE Meta-Argument
-- Demonstrates `prevent_destroy`, `create_before_destroy`, `ignore_changes`
-- Protects critical resources
-- Handles zero-downtime updates
+### 4. Meta-Argumento LIFECYCLE
+- Demuestra `prevent_destroy`, `create_before_destroy` e `ignore_changes`
+- Protege recursos críticos
+- Maneja actualizaciones sin tiempo de inactividad
 
-### 5. PROVIDER Meta-Argument
-- Shows how to use alternate providers (commented example)
-- Multi-region deployment pattern
-- Provider aliasing
+### 5. Meta-Argumento PROVIDER
+- Muestra cómo usar proveedores alternativos (ejemplo comentado)
+- Patrón de despliegue multi-región
+- Alias de proveedores
 
-### 6. Advanced Outputs
-- Splat expressions (`[*]`)
-- For loops in outputs
-- Map transformations
-- Combined outputs
+### 6. Outputs Avanzados
+- Expresiones splat (`[*]`)
+- Bucles `for` en outputs
+- Transformaciones de maps
+- Outputs combinados
 
-## 🎓 Learning Path
+## 🎓 Ruta de Aprendizaje
 
-1. **Start with Task 1-3** in `task.md` to understand the basics
-2. **Practice with Task 4-5** to create your own resources
-3. **Master outputs with Task 6**
-4. **Deep dive with Task 7** to understand count vs for_each differences
-5. **Apply knowledge with Task 8** for a real-world scenario
+1. **Comienza con las Tareas 1-3** en `task.md` para entender los conceptos básicos
+2. **Practica con las Tareas 4-5** para crear tus propios recursos
+3. **Domina los outputs con la Tarea 6**
+4. **Profundiza con la Tarea 7** para entender las diferencias entre count y for_each
+5. **Aplica el conocimiento con la Tarea 8** en un escenario del mundo real
 
-## ⚠️ Important Notes
+## ⚠️ Notas Importantes
 
-### S3 Bucket Names
-- S3 bucket names must be **globally unique** across all AWS accounts
-- Update the default bucket names in `variables.tf` before applying
-- Use your organization prefix or a unique identifier
+### Nombres de Buckets S3
+- Los nombres de buckets S3 deben ser **globalmente únicos** en todas las cuentas de AWS
+- Actualiza los nombres de bucket por defecto en `variables.tf` antes de aplicar
+- Usa el prefijo de tu organización o un identificador único
 
-### Backend Configuration
-- The `backend.tf` uses S3 for remote state
-- Comment out the backend block if you want to use local state
-- Create the S3 bucket manually before running `terraform init`
+### Configuración del Backend
+- El archivo `backend.tf` usa S3 para el estado remoto
+- Comenta el bloque de backend si deseas usar estado local
+- Crea el bucket S3 manualmente antes de ejecutar `terraform init`
 
-### Costs
-- Most resources in this lesson are free tier eligible
-- S3 buckets incur minimal storage costs
-- IAM users are free
-- **Always run `terraform destroy` when done!**
+### Costos
+- La mayoría de los recursos de esta lección son elegibles para el nivel gratuito
+- Los buckets S3 generan costos mínimos de almacenamiento
+- Los usuarios de IAM son gratuitos
+- **¡Siempre ejecuta `terraform destroy` al terminar!**
 
-## 🔍 Key Differences: COUNT vs FOR_EACH
+## 🔍 Diferencias Clave: COUNT vs FOR_EACH
 
-| Feature | COUNT | FOR_EACH |
-|---------|-------|----------|
-| **Input Type** | Number or list | Map or set |
-| **Addressing** | Numeric index `[0]` | Key-based `["name"]` |
-| **Stability** | Less stable | More stable |
-| **Item Removal** | May recreate resources | Only removes specific resource |
-| **Use Case** | Simple scenarios | Production environments |
-| **Readability** | Index-based | Name-based (better) |
+| Característica | COUNT | FOR_EACH |
+|----------------|-------|----------|
+| **Tipo de Entrada** | Número o lista | Map o set |
+| **Direccionamiento** | Índice numérico `[0]` | Basado en clave `["nombre"]` |
+| **Estabilidad** | Menos estable | Más estable |
+| **Eliminación de Elementos** | Puede recrear recursos | Solo elimina el recurso específico |
+| **Caso de Uso** | Escenarios simples | Entornos de producción |
+| **Legibilidad** | Basada en índice | Basada en nombre (mejor) |
 
-## 💡 Best Practices
+## 💡 Buenas Prácticas
 
-1. **Prefer for_each over count** in production environments
-2. **Use meaningful keys** when using for_each with maps
-3. **Use toset()** to convert lists to sets for for_each
-4. **Add proper tags** to all resources for better organization
-5. **Document your choices** - explain why you chose count or for_each
-6. **Test removals** - understand what happens when you remove items
+1. **Prefiere for_each sobre count** en entornos de producción
+2. **Usa claves descriptivas** al usar for_each con maps
+3. **Usa toset()** para convertir listas en sets para for_each
+4. **Agrega etiquetas adecuadas** a todos los recursos para mejor organización
+5. **Documenta tus decisiones** — explica por qué elegiste count o for_each
+6. **Prueba las eliminaciones** — comprende qué ocurre al eliminar elementos
 
-## 🔗 Additional Resources
+## 🔗 Recursos Adicionales
 
-- [Terraform Count Meta-Argument](https://www.terraform.io/language/meta-arguments/count)
-- [Terraform For_Each Meta-Argument](https://www.terraform.io/language/meta-arguments/for_each)
-- [For Expressions](https://www.terraform.io/language/expressions/for)
-- [Splat Expressions](https://www.terraform.io/language/expressions/splat)
-
+- [Meta-Argumento Count en Terraform](https://www.terraform.io/language/meta-arguments/count)
+- [Meta-Argumento For_Each en Terraform](https://www.terraform.io/language/meta-arguments/for_each)
+- [Expresiones For](https://www.terraform.io/language/expressions/for)
+- [Expresiones Splat](https://www.terraform.io/language/expressions/splat)
