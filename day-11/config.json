@@ -1,0 +1,21 @@
+{
+  "id": 1,
+  "activo": true,
+  "nombre": "Ejemplo de Prueba",
+  "descripcion": null,
+  "valores": [10, 20, 30],
+  "metadatos": {
+    "version": "1.0",
+    "origen": "test_local"
+  },
+  "etiquetas": [
+    {
+      "tipo": "categoria",
+      "valor": "desarrollo"
+    },
+    {
+      "tipo": "prioridad",
+      "valor": "alta"
+    }
+  ]
+}
